@@ -1,0 +1,65 @@
+import nltk
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+from nltk.stem import PorterStemmer
+import random
+
+# Sample dataset of intents (for demonstration purposes)
+intents = {
+    'greeting': {
+        'examples': ['hi', 'hello', 'hey', 'howdy'],
+        'responses': ['Hello! How can I help you?', 'Hi there! How can I assist you today?']
+    },
+    'goodbye': {
+        'examples': ['bye', 'goodbye', 'see you'],
+        'responses': ['Goodbye!', 'Have a nice day!', 'See you later!']
+    },
+    'thanks': {
+        'examples': ['thank you', 'thanks a lot', 'thanks!'],
+        'responses': ['You\'re welcome!', 'No problem.', 'My pleasure!']
+    },
+    'default': {
+        'responses': ['Sorry, I didn\'t understand that.', 'Could you please repeat that?']
+    }
+}
+
+# Function to preprocess user input
+def preprocess_input(sentence):
+    # Tokenization
+    tokens = word_tokenize(sentence)
+    # Stop words removal
+    stop_words = set(stopwords.words('english'))
+    filtered_tokens = [token for token in tokens if token.lower() not in stop_words]
+    # Stemming
+    stemmer = PorterStemmer()
+    stemmed_tokens = [stemmer.stem(token) for token in filtered_tokens]
+    return stemmed_tokens
+
+# Function to classify intent based on preprocessed input
+def classify_intent(preprocessed_input):
+    for intent, data in intents.items():
+        if 'examples' in data:
+            for example in data['examples']:
+                if example in preprocessed_input:
+                    return intent
+    return 'default'
+
+# Function to generate response based on intent
+def generate_response(intent):
+    return random.choice(intents[intent]['responses'])
+
+# Main function to run the chatbot
+def chatbot():
+    print("Chatbot: Hello! How can I assist you today?")
+    while True:
+        user_input = input("You: ")
+        preprocessed_input = preprocess_input(user_input)
+        intent = classify_intent(preprocessed_input)
+        response = generate_response(intent)
+        print("Chatbot:", response)
+        if intent == 'goodbye':
+            break
+
+# Run the chatbot
+if __name__ == "__main__":
+    chatbot()
